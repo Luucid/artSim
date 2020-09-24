@@ -23,38 +23,38 @@ class Draw():
     def __next__(self):
         
         self.chk = 1 
-        #print("i next")
-        while(self.chk): 
-            a = np.random.choice(self.ss, 2)     
-            self.nextPos = self.curPos + a 
-            while((a[0] == 0 and a[1] == 0) 
-                  or (self.nextPos[0] >= d or self.nextPos[1] >= d) 
-                  or (self.nextPos[0] <= 0 or self.nextPos[1] <= 0) 
-                  or (self.lastX == int(a[0]) and self.lastY == int(a[1]))
-                  #or (self.isStuck(int(self.nextPos[0]-1),self.nextPos[1]))
-                  
-                  ):
-                #print("i inner loop")
-                a = np.random.choice(self.ss, 2)   
-                self.nextPos = self.curPos + a 
-                
-            self.chk = self.checkEdges(tuple(self.nextPos))
-            
-            #print("i chkk loop")
-            if (self.isStuck(int(self.nextPos[0]-1),self.nextPos[1])):
-                break
+       
+        #while(self.chk): 
+        a = np.random.choice(self.ss, 2)     
+        self.nextPos = self.curPos + a 
         
-       # print("ute av chkk loop")
+        while((a[0] == 0 and a[1] == 0) 
+              or (self.nextPos[0] >= d or self.nextPos[1] >= d) 
+              or (self.nextPos[0] <= 0 or self.nextPos[1] <= 0) 
+              or (self.lastX == int(a[0]) and self.lastY == int(a[1])) 
+              or self.isStuck(int(self.nextPos[0]-1),self.nextPos[1])
+              ):
+           
+            a = np.random.choice(self.ss, 2)   
+            self.nextPos = self.curPos + a 
+            
+        self.chk = self.checkEdges(tuple(self.nextPos), self.curPos)
+        
+        
+        # if (self.isStuck(int(self.nextPos[0]-1),self.nextPos[1])):
+        #     return 1
+        
+       
         if(self.chk == 0):
             self.edgeX = np.append(self.edgeX, int(self.curPos[0]))   
             self.edgeY = np.append(self.edgeY, int(self.curPos[1]))  
             self.lastX = int(a[0])
             self.lastY = int(a[1])
             self.curPos = self.nextPos
-            return 0
+        
+        return 0
        
-        else:
-            return 1
+        
             
 
     
@@ -67,14 +67,13 @@ class Draw():
     
     def isStuck(self, x, y):
         
-        print("in isStuck")
         ################################################### middle    
         
         if(x > 1 and x < self.d-1 and y > 1 and y < self.d-1):
             if(y+1 in self.usedPoints[x-1] and y+1 in self.usedPoints[x] and y+1 in self.usedPoints[x+1]): #top
                 if(y in self.usedPoints[x-1] and y in self.usedPoints[x+1]): #mid
                     if(y-1 in self.usedPoints[x-1] and y-1 in self.usedPoints[x] and y-1 in self.usedPoints[x+1]): #bot
-                        print("stuck i middle")
+                        print("stuck in middle")
                         return 1
                     
         ###################################################
@@ -84,20 +83,20 @@ class Draw():
         if(x == self.d-1 and y == self.d-1): #one
             if(y-1 in self.usedPoints[x] and y-1 in self.usedPoints[x-1]): #bot
                 if(y in self.usedPoints[x-1]): #mid
-                    print("stuck i endlim one")
+                    print("stuck in endlim one")
                     return 1
                 
         if(x == self.d-1 and y < self.d-1 and y > 1): #two
             if(y+1 in self.usedPoints[x] and y+1 in self.usedPoints[x-1]): #top
                 if(y in self.usedPoints[x-1]): #mid
                     if(y-1 in self.usedPoints[x] and y-1 in self.usedPoints[x-1]): #bot
-                        print("stuck i endlim two")
+                        print("stuck in endlim two")
                         return 1
                 
         if(x == self.d - 1 and y == 1): #three
             if(y+1 in self.usedPoints[x] and y+1 in self.usedPoints[x-1]): #top
                 if(y in self.usedPoints[x-1]): #mid    
-                    print("stuck i endlim three")
+                    print("stuck in endlim three")
                     return 1       
                 
          ###################################################
@@ -107,20 +106,20 @@ class Draw():
         if(x == 1 and y == 1): #one
             if(y+1 in self.usedPoints[x] and y+1 in self.usedPoints[x+1]): #top
                 if(y in self.usedPoints[x+1]): #mid
-                    print("stuck i startlim one")
+                    print("stuck in startlim one")
                     return 1
         
         if(x == 1 and y > 1 and y < self.d-1): #two
             if(y+1 in self.usedPoints[x] and y+1 in self.usedPoints[x+1]): #top
                 if(y in self.usedPoints[x+1]): #mid
                     if(y-1 in self.usedPoints[x] and y-1 in self.usedPoints[x+1]): #bot
-                        print("stuck i startlim two")
+                        print("stuck in startlim two")
                         return 1
                 
         if(x == 1 and y == self.d - 1): #three
             if(y in self.usedPoints[x+1]): #mid
                 if(y-1 in self.usedPoints[x] and y-1 in self.usedPoints[x+1]): #bot
-                    print("stuck i startlim three")
+                    print("stuck in startlim three")
                     return 1
                 
         
@@ -132,44 +131,77 @@ class Draw():
         if((x > 1 and x < self.d-1) and y == self.d-1): #max
             if(y in self.usedPoints[x-1] and y in self.usedPoints[x+1]): #mid
                 if(y-1 in self.usedPoints[x-1] and y-1 in self.usedPoints[x] and y-1 in self.usedPoints[x+1]): #bot
-                    print("stuck i ylim max")
+                    print("stuck in ylim max")
                     return 1
                 
         if((x > 1 and x < self.d-1) and y == 1): #min
             if(y in self.usedPoints[x-1] and y in self.usedPoints[x+1]): #mid
                 if(y+1 in self.usedPoints[x-1] and y+1 in self.usedPoints[x] and y+1 in self.usedPoints[x+1]): #top
-                    print("stuck i ylim min")
+                    print("stuck in ylim min")
                     return 1
                 
         ######################################################     
         
             
-        print("returnning 0")
+        # print("returnning 0")
         return 0
-                
-        
-            
-    def addPoint(self, x, y):
+                        
+    
+    def getSizeX(self):
+        return(len(self.edgeX))
+    
+    def addPoint(self, x, y, pp): #pp = prev point
         l = 0 #left
         r = 0 #right
         t = 0 #top
         b = 0 #bot
+    
+        pp1 = ((x+1), (y-1))
+        pp2 = (x+1, y+1)
+        pp3 = ((x-1), (y+1))
+        pp4 = ((x-1), (y-1))
+        
         
         if(y in self.usedPoints[x]): #is spot empty
             return 1
 
-        # if(x>0):
-        #     if(y-1 in self.usedPoints[x-1] and y in self.usedPoints[x-1] and y+1 in self.usedPoints[x-1]):
-        #         l = 1
-                
-       
-        # if(x < self.d):
-        #     if(y+1 in self.usedPoints[x+1] and y+1 in self.usedPoints[x] and y+1 in self.usedPoints[x-1]):
-        #         r = 1
         
         if(x>0):
+            if(y > 0):
+                if(y in self.usedPoints[x-1] 
+                   and y-1 in self.usedPoints[x] 
+                   and y-1 in self.usedPoints[x-1] 
+                   and pp == pp4
+                   ): return 1 # c4
+              
+            if(y < self.d):
+                if(y in self.usedPoints[x-1] 
+                   and y+1 in self.usedPoints[x] 
+                   and y+1 in self.usedPoints[x-1] 
+                   and pp == pp3
+                   ): return 1 # c3
+                
+            
             if(y in self.usedPoints[x-1]):
                 l = 1
+        
+                
+        if(x<self.d):
+            
+            if(y < self.d):
+                if(y in self.usedPoints[x+1] 
+                   and y+1 in self.usedPoints[x] 
+                   and y+1 in self.usedPoints[x+1] 
+                   and pp == pp2
+                   ): return 1 # c2
+                
+            if(y > 0):
+                if(y in self.usedPoints[x+1] 
+                   and y-1 in self.usedPoints[x] 
+                   and y-1 in self.usedPoints[x+1] 
+                   and pp == pp1
+                   ): return 1 # c1
+                
                 
        
         if(x < self.d):
@@ -185,6 +217,8 @@ class Draw():
                 b = 1
         
             
+        
+        
         if(l and r and t and b):
             return 1
             
@@ -194,8 +228,8 @@ class Draw():
         
         
     
-    def checkEdges(self, newP):       
-        return self.addPoint(int(newP[0]-1), int(newP[1]))
+    def checkEdges(self, newP, curP):       
+        return self.addPoint(int(newP[0]-1), int(newP[1]), tuple(curP))
     
         
             
@@ -203,15 +237,19 @@ class Draw():
 #######################################
 
 
-n = 100
-d = 200
-
+n = 10000
+d = n*2
+max_i = n*10
+i = 0
 start = ti.time_ns()
 
 art = Draw(n, d)
-for i in range(n):
-    if(next(art)):
-        break
+# for i in range(n):
+#     print(i)
+    
+while(art.getSizeX() < n and i < max_i):
+    next(art)
+    i+=1
     
     
     
@@ -224,7 +262,7 @@ print("time used for n = %d was %.3f sec" % (n, dif))
 x = art.getEdgeX()
 y = art.getEdgeY()
 
-
+print("size of x = %d, size of y = %d" % (len(x), len(y)))
 
 
     
