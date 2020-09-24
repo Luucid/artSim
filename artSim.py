@@ -57,13 +57,25 @@ class Draw():
         
             
 
-    
+   
     
     def getEdgeX(self):   
         return self.edgeX
     
     def getEdgeY(self):
         return self.edgeY
+    
+    def diagCheck(self, a, ay, b, by, pp, np):
+        if(ay in self.usedPoints[a] and by in self.usedPoints[b]):
+            
+            if((pp == (np[0] - 1, np[1]-1))  #c4
+               or (pp == (np[0]+1, np[1]+1)) #c2
+               or (pp == (np[0]-1, np[1]+1)) #c3
+               or (pp == (np[0]+1, np[1]-1)) #c1
+               ):
+                #print("stopped cross")
+                return 1         
+        return 0
     
     def isStuck(self, x, y):
         
@@ -156,71 +168,30 @@ class Draw():
         t = 0 #top
         b = 0 #bot
     
-        pp1 = ((x+1), (y-1))
-        pp2 = (x+1, y+1)
-        pp3 = ((x-1), (y+1))
-        pp4 = ((x-1), (y-1))
-        
-        
         if(y in self.usedPoints[x]): #is spot empty
             return 1
 
-        
-        if(x>0):
+        ###########################################
+                   #  diagChecks  # 
+        ###########################################
+        if(x > 0):
             if(y > 0):
-                if(y in self.usedPoints[x-1] 
-                   and y-1 in self.usedPoints[x] 
-                   and y-1 in self.usedPoints[x-1] 
-                   and pp == pp4
-                   ): return 1 # c4
-              
-            if(y < self.d):
-                if(y in self.usedPoints[x-1] 
-                   and y+1 in self.usedPoints[x] 
-                   and y+1 in self.usedPoints[x-1] 
-                   and pp == pp3
-                   ): return 1 # c3
-                
-            
-            if(y in self.usedPoints[x-1]):
-                l = 1
-        
-                
-        if(x<self.d):
+                if(self.diagCheck(x-1, y, x, y-1, pp, (x, y))): #c4
+                    return 1
             
             if(y < self.d):
-                if(y in self.usedPoints[x+1] 
-                   and y+1 in self.usedPoints[x] 
-                   and y+1 in self.usedPoints[x+1] 
-                   and pp == pp2
-                   ): return 1 # c2
-                
-            if(y > 0):
-                if(y in self.usedPoints[x+1] 
-                   and y-1 in self.usedPoints[x] 
-                   and y-1 in self.usedPoints[x+1] 
-                   and pp == pp1
-                   ): return 1 # c1
-                
-                
-       
-        if(x < self.d):
-            if(y in self.usedPoints[x+1]):
-                r = 1      
-                
-        if(y < self.d):
-            if(y+1 in self.usedPoints[x]):
-                t = 1
+                if(self.diagCheck(x-1, y, x, y+1, pp, (x, y))): #c3
+                    return 1
         
-        if(y > 0):
-            if(y-1 in self.usedPoints[x]):
-                b = 1
-        
+        # if(x < self.d):
+        #     if(y > 0):
+        #         if(self.diagCheck(x, y-1, x+1, y, pp, (x, y))): #c1
+        #             return 1
             
-        
-        
-        if(l and r and t and b):
-            return 1
+        #     if(y < self.d):
+        #         if(self.diagCheck(x+1, y, x, y+1, pp, (x, y))): #c2
+        #             return 1
+        #############################################  
             
         self.usedPoints[x] = np.append(self.usedPoints[x], y)
         return 0
@@ -237,7 +208,7 @@ class Draw():
 #######################################
 
 
-n = 10000
+n = 1000
 d = n*2
 max_i = n*10
 i = 0
@@ -275,39 +246,62 @@ plt.show()
 ############################################
         
 
-# def getCol():
-#     colors = ["r-", "b-", "g-"]
-#     r = np.random.randint(0,3)
-#     return str(colors[r])
+       # if(y in self.usedPoints[x]): #is spot empty
+       #      return 1
 
-
-
-
-     # if(y in self.usedPoints[x]):
-     #        return 1
-     #    if(x > 0):
-     #        if(y in self.usedPoints[x-1]):         
-     #            return 1
-     #    if(x < self.d):
-     #        if(y in self.usedPoints[x+1]):
-     #            return 1
-            
-     #    if(y > 0):
-     #        if((y-1) in self.usedPoints[x]):
-     #            return 1
-     #        # if(x > 0):
-     #        #     if((y-1) in self.usedPoints[x-1]):
-     #        #         return 1
-     #        if(x < self.d):
-     #            if((y-1) in self.usedPoints[x+1]):
-     #                return 1
+        
+       #  if(x>0):
+       #      if(y > 0):
+       #          if(y in self.usedPoints[x-1] 
+       #             and y-1 in self.usedPoints[x] 
+       #             and y-1 in self.usedPoints[x-1] 
+       #             and pp == pp4
+       #             ): return 1 # c4
+              
+       #      if(y < self.d):
+       #          if(y in self.usedPoints[x-1] 
+       #             and y+1 in self.usedPoints[x] 
+       #             and y+1 in self.usedPoints[x-1] 
+       #             and pp == pp3
+       #             ): return 1 # c3
                 
-     #    if(y < self.d):
-     #        if((y+1) in self.usedPoints[x]):
-     #            return 1
-     #        # if(x > 0):
-     #        #     if((y+1) in self.usedPoints[x-1]):
-     #        #         return 1
-     #        if(x < self.d):
-     #            if((y+1) in self.usedPoints[x+1]):
-     #                return 1
+            
+       #      if(y in self.usedPoints[x-1]):
+       #          l = 1
+        
+                
+       #  if(x<self.d):
+            
+       #      if(y < self.d):
+       #          if(y in self.usedPoints[x+1] 
+       #             and y+1 in self.usedPoints[x] 
+       #             and y+1 in self.usedPoints[x+1] 
+       #             and pp == pp2
+       #             ): return 1 # c2
+                
+       #      if(y > 0):
+       #          if(y in self.usedPoints[x+1] 
+       #             and y-1 in self.usedPoints[x] 
+       #             and y-1 in self.usedPoints[x+1] 
+       #             and pp == pp1
+       #             ): return 1 # c1
+                
+                
+       
+       #  if(x < self.d):
+       #      if(y in self.usedPoints[x+1]):
+       #          r = 1      
+                
+       #  if(y < self.d):
+       #      if(y+1 in self.usedPoints[x]):
+       #          t = 1
+        
+       #  if(y > 0):
+       #      if(y-1 in self.usedPoints[x]):
+       #          b = 1
+        
+            
+        
+        
+       #  if(l and r and t and b):
+       #      return 1
