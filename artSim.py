@@ -3,13 +3,19 @@ import matplotlib.pyplot as plt
 import time as ti
 
 class Draw():
-    def __init__(self, n, d): #d is dimention, x y.
+    def __init__(self, n, d, tpType): #d is dimention, x y.
         self.ss = [-1, 0, 1]
-     
+        
         self.edgeX = []
         self.edgeY = []
         self.lastX = int(d/2)
         self.lastY = int(d/2)
+        
+        self.tpTypes = ["standard", "corners", "chaos", "growing"]
+        self.tpc = 0
+        self.crns = [[1, 1],[1, d/2],[d/2, d/2],[d/2, 1]]
+        self.ci = 0
+        self.tp = self.tpTypes[(tpType-1)%4] #line navigation types.
         
         self.usedPoints = [[]]*d # [x][y]
         self.d = d
@@ -18,12 +24,12 @@ class Draw():
         self.chk = 1 #loop når denne er 1
         self.curPos = (d/2,d/2)
         self.nextPos = (4,4)
-     
+        print("tp type set to %s" % self.tp)
     
     def __next__(self):
         
         self.chk = 1 
-        tpc = 1
+        self.tpc = 1
        
         a = np.random.choice(self.ss, 2)     
         self.nextPos = self.curPos + a 
@@ -35,19 +41,53 @@ class Draw():
               or self.isStuck(int(self.nextPos[0]),int(self.nextPos[1]))
               ):
             
-            
-            #print(tpc)
-            if(tpc > 5):
-                self.ss = [-tpc, 0, tpc]
+            if(self.tp == "standard"):
+                if(self.tpc > 5):
+                    self.ss = [-self.tpc, 0, self.tpc]
+                a = np.random.choice(self.ss, 2)   
+                self.nextPos = self.curPos + a 
+                self.tpc += 1
                 
-            a = np.random.choice(self.ss, 2)   
-            self.nextPos = self.curPos + a 
-            tpc += 1
         
+            elif(self.tp == "corners"):
+                if(self.tpc > 5):
+                    self.nextPos = self.crns[self.ci]
+                    self.ci +=1
+                    if(self.ci > 3):
+                        self.tp = "standard"
+                    
+                else:
+                    a = np.random.choice(self.ss, 2)   
+                    self.nextPos = self.curPos + a 
+                self.tpc += 1
+                
+            
+            elif(self.tp == "chaos"):
+                
+                rnga = np.random.randint(1, 10)
+                rngb = np.random.randint(1, 10)
+                self.ss = [-rnga, 0, rngb]
+                a = np.random.choice(self.ss, 2)   
+                self.nextPos = self.curPos + a 
+            
+            elif(self.tp == "growing"):
+                
+                a = np.random.choice(self.ss, 2)   
+                self.nextPos = self.curPos + a 
+                
+                self.ss[0] -= np.random.randint(1, 3)
+                self.ss[2] += np.random.randint(1, 3)
+                
+                
+                
+             
+            
+            
             
         self.chk = self.checkEdges(tuple(self.nextPos), self.curPos)
-            
-        self.ss = [-1, 0, 1]
+        
+        if(self.tp != "growing"):
+            self.ss = [-1, 0, 1]
         if(self.chk == 0):
             self.edgeX = np.append(self.edgeX, int(self.curPos[0]))   
             self.edgeY = np.append(self.edgeY, int(self.curPos[1]))  
@@ -59,7 +99,11 @@ class Draw():
         
      
 
-   
+ 
+        
+        
+        
+        
     
     def getEdgeX(self):   
         return self.edgeX
@@ -208,19 +252,19 @@ class Draw():
 
 n = 1000
 d = n*2
-prct = n / 10 #for status..
+prct = n / 100 #for status..
 
 i = 0
 
 start = ti.time_ns()
 
-art = Draw(n, d)
+art = Draw(n, d, 4)
 
     
 while(i < n):
     i+=next(art)
-    if(i%prct == 0):
-        print("%d of %d"%(i, n))
+    # if(i%prct == 0):
+    #     print("%d of %d"%(i, n))
        
     
     
@@ -240,18 +284,22 @@ print("size of x = %d, size of y = %d" % (len(x), len(y)))
 
 plt.figure(dpi=1200) 
 plt.axis("equal")
-for i in range(1, n):
+plt.axis("off")
+
+
+cols = ["r-", "g-", "b-"]
+for i in range(1, n-1):
     if(x[i] < x[i-1]):
         if(x[i-1] - x[i] > 1):
-            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "b.")
+            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "y:", linewidth=0.2, markersize= 0.5)
         else:
-            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "g-")
+            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "%s" %(cols[i%3]), linewidth=0.2)
             
     else:
         if(x[i] - x[i-1] > 1):
-            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "b.")
+            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "c:", linewidth=0.2, markersize = 1)
         else:
-            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "r-")
+            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "%s" %(cols[i%3]), linewidth=0.2)
         
             
     
