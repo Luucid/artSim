@@ -11,19 +11,23 @@ class Draw():
         self.lastX = int(d/2)
         self.lastY = int(d/2)
         
-        self.tpTypes = ["standard", "corners", "chaos", "growing"]
+        self.tpTypes = ["standard", "corners", "chaos", "growing", "fractal"]
         self.tpc = 0
         self.crns = [[1, 1],[1, d/2],[d/2, d/2],[d/2, 1]]
         self.ci = 0
-        self.tp = self.tpTypes[(tpType-1)%4] #line navigation types.
+        self.tp = self.tpTypes[(tpType-1)%5] #line navigation types.
         
         self.usedPoints = [[]]*d # [x][y]
         self.d = d
         self.infloop = 0
         
         self.chk = 1 #loop når denne er 1
-        self.curPos = (d/2,d/2)
-        self.nextPos = (4,4)
+        if(self.tp == "fractal"):
+            self.curPos = (1,1)
+            self.nextPos = (1,1)
+        else: 
+            self.curPos = (d/2,d/2)
+            self.nextPos = (d/2,d/2)
         print("tp type set to %s" % self.tp)
     
     def __next__(self):
@@ -77,6 +81,13 @@ class Draw():
                 
                 self.ss[0] -= np.random.randint(1, 3)
                 self.ss[2] += np.random.randint(1, 3)
+            
+            elif(self.tp == "fractal"):
+                self.ss = [0, 1, 2]
+                a = np.random.choice(self.ss, 2)   
+                self.nextPos = self.curPos + a
+                
+                
                 
                 
                 
@@ -89,8 +100,10 @@ class Draw():
         if(self.tp != "growing"):
             self.ss = [-1, 0, 1]
         if(self.chk == 0):
+      
             self.edgeX = np.append(self.edgeX, int(self.curPos[0]))   
             self.edgeY = np.append(self.edgeY, int(self.curPos[1]))  
+                
             self.lastX = int(a[0])
             self.lastY = int(a[1])
             self.curPos = self.nextPos
@@ -250,21 +263,21 @@ class Draw():
 #######################################
 
 
-n = 1000
+n = 10
 d = n*2
 prct = n / 100 #for status..
-
+mode = int(input("choose mode between 1-5: "))
 i = 0
 
 start = ti.time_ns()
 
-art = Draw(n, d, 4)
+art = Draw(n, d, mode)
 
     
 while(i < n):
     i+=next(art)
-    # if(i%prct == 0):
-    #     print("%d of %d"%(i, n))
+    if(i%prct == 0):
+        print("%d of %d"%(i, n))
        
     
     
@@ -280,28 +293,135 @@ y = art.getEdgeY()
 
 print("size of x = %d, size of y = %d" % (len(x), len(y)))
 
+
+   
+def prnt(x, y, cols, lt):
+    
+    for i in range(1, n-1):
+            
+        if(x[i] < x[i-1]):
+            if(x[i-1] - x[i] > 1):
+                plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "y:", linewidth=lt, markersize= 0.5)
+            else:
+                plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "%s" %(cols[i%3]), linewidth=lt)
+                
+        else:
+            if(x[i] - x[i-1] > 1):
+                plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "c:", linewidth=lt, markersize = 1)
+            else:
+                plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "%s" %(cols[i%3]), linewidth=lt)
+        
+
+def frct(n):
+    for i in range(1,n):
+        xt = np.array(x)
+        yt = np.array(y)
+        
+        yt *= i
+        
+        prnt(xt, yt, cols, 0.2)
+              
+        xt = np.negative(xt)
+        yt = np.negative(yt)  
+        prnt(xt, yt, cols, 0.2)
+            
+        xt = np.negative(xt)  
+        prnt(xt, yt, cols, 0.2)
+                 
+        yt = np.negative(yt) 
+        xt = np.negative(xt)
+        prnt(xt, yt, cols, 0.2)
+        
+    for i in range(1,n):
+        xt = np.array(y)
+        yt = np.array(x)
+        
+        xt *= i
+        
+        prnt(xt, yt, cols, 0.2)
+              
+        xt = np.negative(xt)
+        yt = np.negative(yt)  
+        prnt(xt, yt, cols, 0.2)
+            
+        xt = np.negative(xt)  
+        prnt(xt, yt, cols, 0.2)
+                 
+        yt = np.negative(yt) 
+        xt = np.negative(xt)
+        prnt(xt, yt, cols, 0.2)
+        
+        
+        
     
 
 plt.figure(dpi=1200) 
 plt.axis("equal")
 plt.axis("off")
-
-
 cols = ["r-", "g-", "b-"]
-for i in range(1, n-1):
-    if(x[i] < x[i-1]):
-        if(x[i-1] - x[i] > 1):
-            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "y:", linewidth=0.2, markersize= 0.5)
-        else:
-            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "%s" %(cols[i%3]), linewidth=0.2)
-            
-    else:
-        if(x[i] - x[i-1] > 1):
-            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "c:", linewidth=0.2, markersize = 1)
-        else:
-            plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "%s" %(cols[i%3]), linewidth=0.2)
+
         
-            
+
+if(mode == 5):
+    frct(5)
+    
+    
+else:
+    print("init drawing, please wait")
+    prnt(x, y, cols)
     
 plt.show()
+
+
+
+
+
+ #prnt(x, y, cols, np.random.uniform(0.5, 2))
     
+    # xt = np.array(x)
+    # yt = np.array(y)
+    
+    # print("init drawing, please wait")
+    
+    # ###########################################
+    
+    # prnt(xt, yt, cols, 0.2)
+    
+    
+    # xt = np.negative(xt)
+    # yt = np.negative(yt)  
+    # prnt(xt, yt, cols, 0.2)
+    
+    
+    # xt = np.negative(xt)  
+    # prnt(xt, yt, cols, 0.2)
+   
+           
+    # yt = np.negative(yt) 
+    # xt = np.negative(xt)
+    # prnt(xt, yt, cols, 0.2)
+    
+    
+    # ###########################################
+    
+    # xt = np.array(x)
+    # yt = np.array(y)
+    # yt *= 2
+    
+    # prnt(xt, yt, cols, 0.2)
+    
+    
+    # xt = np.negative(xt)
+    # yt = np.negative(yt)  
+    # prnt(xt, yt, cols, 0.2)
+    
+    
+    # xt = np.negative(xt)  
+    # prnt(xt, yt, cols, 0.2)
+   
+           
+    # yt = np.negative(yt) 
+    # xt = np.negative(xt)
+    # prnt(xt, yt, cols, 0.2)
+
+ 
