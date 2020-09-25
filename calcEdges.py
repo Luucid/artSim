@@ -2,7 +2,8 @@ import numpy as np
 
 class Draw():
     def __init__(self, n, d, tpType): #d is dimention, x y.
-        self.ss = [-1, 0, 1]
+  
+        self.ss = [-3, -2, -1, 0, 1, 2, 3]
         self.edgeX = []
         self.edgeY = []
         self.lastX = int(d/2)
@@ -19,12 +20,9 @@ class Draw():
         self.infloop = 0
         
         self.chk = 1 #loop når denne er 1
-        if(self.tp == "bestPat"):
-            self.curPos = (1,1)
-            self.nextPos = (1,1)
-        else: 
-            self.curPos = (d/2,d/2)
-            self.nextPos = (d/2,d/2)
+        self.curPos = (1,1)
+        self.nextPos = (1,1)
+       
         print("tp type set to %s" % self.tp)
     
     def __next__(self):
@@ -42,63 +40,12 @@ class Draw():
               or self.isStuck(int(self.nextPos[0]),int(self.nextPos[1]))
               ):
             
-            
-            if(self.tp == "bestPat"):
-                self.ss = [0, 1, 2]
-                a = np.random.choice(self.ss, 2)   
-                self.nextPos = self.curPos + a
+            a = np.random.choice(self.ss, 2)   
+            self.nextPos = self.curPos + a
                 
-            elif(self.tp == "standard"):
-                if(self.tpc > 5):
-                    self.ss = [-self.tpc, 0, self.tpc]
-                a = np.random.choice(self.ss, 2)   
-                self.nextPos = self.curPos + a 
-                self.tpc += 1
-                
-        
-            elif(self.tp == "corners"):
-                if(self.tpc > 5):
-                    self.nextPos = self.crns[self.ci]
-                    self.ci +=1
-                    if(self.ci > 3):
-                        self.tp = "standard"
-                    
-                else:
-                    a = np.random.choice(self.ss, 2)   
-                    self.nextPos = self.curPos + a 
-                self.tpc += 1
-                
-            
-            elif(self.tp == "chaos"):
-                
-                rnga = np.random.randint(1, 10)
-                rngb = np.random.randint(1, 10)
-                self.ss = [-rnga, 0, rngb]
-                a = np.random.choice(self.ss, 2)   
-                self.nextPos = self.curPos + a 
-            
-            elif(self.tp == "growing"):
-                
-                a = np.random.choice(self.ss, 2)   
-                self.nextPos = self.curPos + a 
-                
-                self.ss[0] -= np.random.randint(1, 3)
-                self.ss[2] += np.random.randint(1, 3)
-            
-            
-                
-                
-                
-                
-                
-             
-            
-            
-            
+       
         self.chk = self.checkEdges(tuple(self.nextPos), self.curPos)
-        
-        if(self.tp != "growing"):
-            self.ss = [-1, 0, 1]
+
         if(self.chk == 0):
       
             self.edgeX = np.append(self.edgeX, int(self.curPos[0]))   
@@ -261,3 +208,43 @@ class Draw():
             
 
 #######################################
+
+
+
+
+    # elif(self.tp == "standard"):
+    #             if(self.tpc > 5):
+    #                 self.ss = [-self.tpc, 0, self.tpc]
+    #             a = np.random.choice(self.ss, 2)   
+    #             self.nextPos = self.curPos + a 
+    #             self.tpc += 1
+                
+        
+    #         elif(self.tp == "corners"):
+    #             if(self.tpc > 5):
+    #                 self.nextPos = self.crns[self.ci]
+    #                 self.ci +=1
+    #                 if(self.ci > 3):
+    #                     self.tp = "standard"
+                    
+    #             else:
+    #                 a = np.random.choice(self.ss, 2)   
+    #                 self.nextPos = self.curPos + a 
+    #             self.tpc += 1
+                
+            
+    #         elif(self.tp == "chaos"):
+                
+    #             rnga = np.random.randint(1, 10)
+    #             rngb = np.random.randint(1, 10)
+    #             self.ss = [-rnga, 0, rngb]
+    #             a = np.random.choice(self.ss, 2)   
+    #             self.nextPos = self.curPos + a 
+            
+    #         elif(self.tp == "growing"):
+                
+    #             a = np.random.choice(self.ss, 2)   
+    #             self.nextPos = self.curPos + a 
+                
+    #             self.ss[0] -= np.random.randint(1, 3)
+    #             self.ss[2] += np.random.randint(1, 3)
