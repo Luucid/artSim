@@ -8,7 +8,7 @@ class Draw():
         self.lastX = int(d/2)
         self.lastY = int(d/2)
         
-        self.tpTypes = ["standard", "corners", "chaos", "growing", "fractal"]
+        self.tpTypes = ["standard", "corners", "chaos", "growing", "bestPat"]
         self.tpc = 0
         self.crns = [[1, 1],[1, d/2],[d/2, d/2],[d/2, 1]]
         self.ci = 0
@@ -19,7 +19,7 @@ class Draw():
         self.infloop = 0
         
         self.chk = 1 #loop når denne er 1
-        if(self.tp == "fractal"):
+        if(self.tp == "bestPat"):
             self.curPos = (1,1)
             self.nextPos = (1,1)
         else: 
@@ -42,7 +42,13 @@ class Draw():
               or self.isStuck(int(self.nextPos[0]),int(self.nextPos[1]))
               ):
             
-            if(self.tp == "standard"):
+            
+            if(self.tp == "bestPat"):
+                self.ss = [0, 1, 2]
+                a = np.random.choice(self.ss, 2)   
+                self.nextPos = self.curPos + a
+                
+            elif(self.tp == "standard"):
                 if(self.tpc > 5):
                     self.ss = [-self.tpc, 0, self.tpc]
                 a = np.random.choice(self.ss, 2)   
@@ -79,10 +85,7 @@ class Draw():
                 self.ss[0] -= np.random.randint(1, 3)
                 self.ss[2] += np.random.randint(1, 3)
             
-            elif(self.tp == "fractal"):
-                self.ss = [0, 1, 2]
-                a = np.random.choice(self.ss, 2)   
-                self.nextPos = self.curPos + a
+            
                 
                 
                 

@@ -32,7 +32,7 @@ def prnt(x, y, cols, lt):
     
     
 def frctRec(l, mp, mpmp, n, x, y, cols): # mp = multiplier, mpmp = multiplier multiplier.
-    print("start scale = %.2fx | multiplier = %.5f | n shifs = %d" % (mp, mpmp,n), "\n"+"-------------------------"+"\n")
+    print("-------------------------")
     for i in range(1,l):
         frct(mp,n, x, y, cols)
         mp *= mpmp
@@ -92,8 +92,8 @@ def drawing(n, d, nShifts, mmp, prct, mode, p):
     y = art.getEdgeY()
             
 
-    
-    plt.figure(dpi=1200) 
+    qlt = int(input("please enter print quality(200-1200, higher is better): "))
+    plt.figure(dpi=qlt) 
     plt.axis("equal")
     plt.axis("off")
     
@@ -106,21 +106,25 @@ def drawing(n, d, nShifts, mmp, prct, mode, p):
     else:
         print("init drawing, please wait")
         prnt2(x, y, cols, 0.2, n)
-        
+      
+    print("init render, please wait..\n"+"-------------------------")
     plt.show()
+    print("done!")
 
  
 
 
 def startUp():
     n = int(input("enter number of lines in one layer: "))
-    d = int(input("enter canvas multiplier: "))
+    #d = int(input("enter canvas multiplier: "))
+    d = 2
     d = n*d
     nShifts = 0
     mmp = 1
     prct = n / 100
-    print("\n\n"+"modes:\n" + "1. standard \n"+"2. corners \n"+"3. chaos \n"+"4. growing \n"+"5. only-positive \n")
-    mode = int(input("choose mode between 1-5: "))
+    #print("\n\n"+"modes:\n" + "1. standard \n"+"2. corners \n"+"3. chaos \n"+"4. growing \n"+"5. bestPat \n")
+    #mode = int(input("choose mode between 1-5: "))
+    mode = 5
     rep = int(input("enable patternization? (0/1): "))
 
     if(rep):
