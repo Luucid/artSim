@@ -26,7 +26,7 @@ def prnt2(x, y, cols, lt, n):
  
    
 def prnt(x, y, cols, lt):
-    r = np.random.randint(0,3)
+    r = np.random.randint(0,6)
     plt.plot(x, y, "%s" % (cols[r]),label = lt, linewidth=lt)
     
     
@@ -45,11 +45,13 @@ def frct(mp, n, x, y, cols):
         if(i%2 == 0):
             xt = np.array(x)
             yt = np.array(y)
+            xt *= mp
             yt *= mp
         else:
             xt = np.array(y)
             yt = np.array(x)
             xt *= mp
+            yt *= mp
           
         prnt(xt, yt, cols, 0.1)
               
@@ -74,7 +76,7 @@ def frct(mp, n, x, y, cols):
 def drawing(n, d, nShifts, mmp, prct, mode, p):
     start = ti.time_ns()
     art = ce.Draw(n, d, mode)
-    cols = ["r-", "g-", "b-"]  
+    cols = ["r-", "g-", "b-", "y-", "c-", "m-"]  
     
     i = 0
     while(i < n):
@@ -96,7 +98,12 @@ def drawing(n, d, nShifts, mmp, prct, mode, p):
     plt.figure(dpi=qlt) 
     plt.axis("equal")
     plt.axis("off")
+    plt.plot(x, y, "b-")
+    plt.show()
     
+    plt.figure(dpi=qlt) 
+    plt.axis("equal")
+    plt.axis("off")
 
     if(p):
         print("init drawing, please wait..")
@@ -130,9 +137,11 @@ def startUp():
     if(rep):
         nShifts = int(input("choose number of repetitions for pattern: "))
         mmp = float(input("choose scew multiplier(x<1 == shrinking): "))
+    
+
     drawing(n, d, nShifts, mmp, prct, mode, rep)   
 
-
+    
 startUp()
 
 
