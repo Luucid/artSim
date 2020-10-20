@@ -3,17 +3,25 @@ import numpy as np
 class Draw():
     def __init__(self, n, d, tpType): #d is dimention, x y.
   
-        self.ss = [-3, -2, -1, 0, 1, 2, 3]
-        self.edgeX = []
-        self.edgeY = []
-        self.lastX = int(d/2)
-        self.lastY = int(d/2)
+        # self.ss = [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+        self.ss = [-1, 0, 1]
+        self.edgeX = [5]
+        self.edgeY = [5]
+        # self.lastX = int(d/2)
+        # self.lastY = int(d/2)
         
         self.tpTypes = ["standard", "corners", "chaos", "growing", "bestPat"]
         self.tpc = 0
         self.crns = [[1, 1],[1, d/2],[d/2, d/2],[d/2, 1]]
         self.ci = 0
         self.tp = self.tpTypes[(tpType-1)%5] #line navigation types.
+        
+        self.uPd = [[]] * 10000
+        self.uPdCount = 0
+        self.lastX = 1
+        self.lastY = 0
+        self.lp = [5, 5]
+        self.test = tpType
         
         self.usedPoints = [[]]*d # [x][y]
         self.d = d
@@ -22,49 +30,61 @@ class Draw():
         self.chk = 1 #loop når denne er 1
         self.curPos = (1,1)
         self.nextPos = (1,1)
-       
-        print("tp type set to %s" % self.tp)
+     
     
     def __next__(self):
         
-        self.chk = 1 
-        self.tpc = 1
-       
-        a = np.random.choice(self.ss, 2)     
-        self.nextPos = self.curPos + a 
         
-        while((a[0] == 0 and a[1] == 0) 
-              or (self.nextPos[0] >= self.d) 
-              or (self.nextPos[0] <= 0) 
-              or (self.lastX == int(a[0]) and self.lastY == int(a[1])) 
-              or self.isStuck(int(self.nextPos[0]),int(self.nextPos[1]))
-              ):
+        if (self.test == 10):
             
-            a = np.random.choice(self.ss, 2)   
-            self.nextPos = self.curPos + a
-                
-       
-        self.chk = self.checkEdges(tuple(self.nextPos), self.curPos)
-
-        if(self.chk == 0):
-      
-            self.edgeX = np.append(self.edgeX, int(self.curPos[0]))   
-            self.edgeY = np.append(self.edgeY, int(self.curPos[1]))  
-                
-            self.lastX = int(a[0])
-            self.lastY = int(a[1])
-            self.curPos = self.nextPos
+            a = np.random.choice(self.ss, 2)
+            while(abs(a[0]) == abs(a[1]) 
+                  and (abs(a[0]) == abs(self.lastX))
+                  and (abs(a[1]) == abs(self.lastY))
+                  ):
+                a = np.random.choice(self.ss, 2)               
+                print("stuck")
+            
+            self.edgeX = np.append(self.edgeX, int(self.lp[0]))
+            self.edgeY = np.append(self.edgeY, int(self.lp[1]))
             return 1
-        return 0
+            
+            
+        else:
+            
+            self.chk = 1 
+            self.tpc = 1
+           
+            a = np.random.choice(self.ss, 2)     
+            self.nextPos = self.curPos + a 
+            
+            while((a[0] == 0 and a[1] == 0) 
+                  or (self.nextPos[0] >= self.d) 
+                  or (self.nextPos[0] <= 0) 
+                  or (self.lastX == int(a[0]) and self.lastY == int(a[1])) 
+                  or self.isStuck(int(self.nextPos[0]), int(self.nextPos[1]))
+                  ):
+                
+                a = np.random.choice(self.ss, 2)   
+                a[0] = int(a[0])
+                a[1] = int(a[1])
+                self.nextPos = self.curPos + a
+                    
+           
+            self.chk = self.checkEdges(tuple(self.nextPos), self.curPos)
+    
+            if(self.chk == 0):
+          
+                self.edgeX = np.append(self.edgeX, int(self.curPos[0]))   
+                self.edgeY = np.append(self.edgeY, int(self.curPos[1]))  
+                    
+                self.lastX = int(a[0])
+                self.lastY = int(a[1])
+                self.curPos = self.nextPos
+                return 1
+            return 0
         
      
-
- 
-        
-        
-        
-        
-    
     def getEdgeX(self):   
         return self.edgeX
     
@@ -79,10 +99,21 @@ class Draw():
                or (pp == (np[0]-1, np[1]+1)) #c3
                or (pp == (np[0]+1, np[1]-1)) #c1
                ):
-                #print("stopped cross")
+                
                 return 1         
         return 0
     
+
+    def noDiag(self, x, y):
+        
+        for i in range(len(self.edgeX)):
+            if(self.edgeX[i] == x):
+                if(self.edgeY[i] == y):
+                    return 0
+        return 1
+      
+          
+        
     def isStuck(self, x, y):
         
         ################################################### middle    
@@ -202,7 +233,7 @@ class Draw():
         
     
     def checkEdges(self, newP, curP):       
-        return self.addPoint(int(newP[0]-1), int(newP[1]), tuple(curP))
+        return self.addPoint(int(newP[0]-1), float(newP[1]), tuple(curP))
     
         
             

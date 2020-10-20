@@ -3,43 +3,34 @@ import matplotlib.pyplot as plt
 import time as ti
 import calcEdges as ce
 
-
-
-
-
-
-
-def prnt2(x, y, cols, lt, n):
-    for i in range(1, n-1):
-            
-        if(x[i] < x[i-1]):
-            if(x[i-1] - x[i] > 1):
-                plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "c:", linewidth=lt, markersize= 0.5)
-            else:
-                plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "%s" %(cols[i%3]), linewidth=lt)
-                
-        else:
-            if(x[i] - x[i-1] > 1):
-                plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "c:", linewidth=lt, markersize = 1)
-            else:
-                plt.plot([x[i-1], x[i]], [y[i-1], y[i]], "%s" %(cols[i%3]), linewidth=lt)
  
    
-def prnt(x, y, cols, lt):
-    r = np.random.randint(0,6)
-    plt.plot(x, y, "%s" % (cols[r]),label = lt, linewidth=lt)
+def prnt(x, y, cols, lt, cntr):
+   # r = np.random.randint(0,6)
+    plt.plot(x, y, "%s" % (cols),label = lt, linewidth=lt)
+    counter = cntr + 1
+    return counter
     
     
     
 def frctRec(l, mp, mpmp, n, x, y, cols): # mp = multiplier, mpmp = multiplier multiplier.
     print("-------------------------")
+    counter = 0
     for i in range(1,l):
-        frct(mp,n, x, y, cols)
+        r = np.random.randint(1, 10)
+        counter = frct(mp,n, x, y, cols[i%r], counter)
         mp *= mpmp
+        print(counter)
+       
+        
+    return counter
+        
   
 
 
-def frct(mp, n, x, y, cols):
+def frct(mp, n, x, y, cols, cntr):
+    tck = np.random.uniform(0.1, 0.2)
+    counter = cntr
     for i in range(1,n):
         
         if(i%2 == 0):
@@ -53,93 +44,124 @@ def frct(mp, n, x, y, cols):
             xt *= mp
             yt *= mp
           
-        prnt(xt, yt, cols, 0.1)
-              
+        counter = prnt(xt, yt, cols, tck, counter)
+
         xt = np.negative(xt)
         yt = np.negative(yt)  
-        prnt(xt, yt, cols, 0.1)
+        counter = prnt(xt, yt, cols, tck, counter)
             
+   
         xt = np.negative(xt)  
-        prnt(xt, yt, cols, 0.1)
-                 
+        counter = prnt(xt, yt, cols, tck, counter)
+           
+      
         yt = np.negative(yt) 
         xt = np.negative(xt)
-        prnt(xt, yt, cols, 0.1)
+        counter = prnt(xt, yt, cols, tck, counter)
         
+        return counter
 
   
 
-        
+def getCol():
+    r = np.random.randint(0,4)
+    c1 = ["b-", "c-", "g-", "y-", "r-", "b--", "c--", "g--", "y--", "r--"]  
+    c2 = ["b-", "g-", "b-", "g-", "b-", "g--", "b--", "g--", "b--", "g--"] 
+    c3 = ["r-", "r-", "b-", "b-", "r-", "r--", "g--", "g--", "y--", "r--"] 
+    c4 = ["b-", "c-", "b-", "c-", "b-", "b--", "c--", "g--", "y--", "r--"] 
+
+    if(r == 0):
+        return c1
+    if(r == 1):
+        return c2
+    if (r == 3):
+        return c3
+    if (r == 4):
+        return c4
+    return c1
         
         
 
-def drawing(n, d, nShifts, mmp, prct, mode, p):
-    start = ti.time_ns()
-    art = ce.Draw(n, d, mode)
-    cols = ["r-", "g-", "b-", "y-", "c-", "m-"]  
+def drawing(n, d, nShifts, mmp, mode, p):
     
+    art = ce.Draw(n, d, mode)
+    
+    cols = getCol()
+    
+    qlt = 1200
+    plt.figure(dpi=qlt) 
+    plt.axis("equal")
+    plt.subplot().spines["left"].set_visible(0)
+    plt.subplot().spines["right"].set_visible(0)
+    plt.subplot().spines["top"].set_visible(0)
+    plt.subplot().spines["bottom"].set_visible(0)
+ 
+   
     i = 0
-    while(i < n):
-        
+    print("init base-line calculations.")
+    while(i < n):       
         i+=next(art)
-        if(i%prct == 0):
-            print("%d of %d"%(i, n))
-             
-        
-    end = ti.time_ns()
-    dif = (end-start)*(10**-9)
-    print("time used for n = %d was %.3f sec" % (n, dif))
+ 
+    print("done! \n")
     
     x = art.getEdgeX()
     y = art.getEdgeY()
-            
-
-    qlt = int(input("please enter print quality(200-1200, higher is better): "))
-    plt.figure(dpi=qlt) 
-    plt.axis("equal")
-    plt.axis("off")
-    plt.plot(x, y, "b-")
-    plt.show()
+    print(x, "XXXX")
+    print(y, "YYYY")
     
-    plt.figure(dpi=qlt) 
-    plt.axis("equal")
-    plt.axis("off")
-
-    if(p):
-        print("init drawing, please wait..")
-        frctRec(nShifts, 1, mmp, n, x, y, cols)
-        print("done! \n\n\n")  
+    lines = len(x) - 1
     
-    else:
-        print("init drawing, please wait")
-        prnt2(x, y, cols, 0.2, n)
-      
-    print("init render, please wait..\n"+"-------------------------")
+ 
+    print("init drawing, please wait..")
+    
+    cntr = frctRec(nShifts, 1, mmp, n, x, y, cols)
+    linesDrawn = cntr * lines
+    plt.xlabel("n lines = "+str(linesDrawn))
+    
+    print("number of lines = %d" % linesDrawn)
+    print("done! \n")  
+    
+
+    print("init render, please wait..")
+    
+    start = ti.time_ns()
+    plt.xticks([])
+    plt.yticks([])
     plt.show()
-    print("done!")
+    end = ti.time_ns()
+    rendTime = (end-start) * (10**-9)
+   
+    print("done! time used: %.3f" % rendTime)
+    print("-------------------------\n")
+    
+    plt.plot(x, y, "r-")
+    plt.show()
 
  
 
-
-def startUp():
-    n = int(input("enter number of lines in one layer: "))
-    #d = int(input("enter canvas multiplier: "))
-    d = 2
-    d = n*d
-    nShifts = 0
-    mmp = 1
-    prct = n / 100
-    #print("\n\n"+"modes:\n" + "1. standard \n"+"2. corners \n"+"3. chaos \n"+"4. growing \n"+"5. bestPat \n")
-    #mode = int(input("choose mode between 1-5: "))
-    mode = 5
-    rep = int(input("enable patternization? (0/1): "))
-
-    if(rep):
-        nShifts = int(input("choose number of repetitions for pattern: "))
-        mmp = float(input("choose scew multiplier(x<1 == shrinking): "))
+    
     
 
-    drawing(n, d, nShifts, mmp, prct, mode, rep)   
+def startUp():
+  
+      
+    mode = 10
+    rep = 1
+    
+    
+    for i in range(1):
+        # n = np.random.randint(4, 6)
+        n = 10
+        d = n*2
+        nShifts = np.random.randint(10, 50)
+        mmp = np.random.uniform(0.92, 1.08)
+        print("---------------------------")
+        print("n = %d | nShifts = %d | multiplier = %.5f \n" % (n, nShifts, mmp))
+        drawing(n, d, nShifts, mmp, mode, rep)   
+        
+    
+           
+    
 
     
 startUp()
